@@ -7,8 +7,8 @@
 </head>
 <body>
     <h3>Create a new listing</h3>
-    <form method="post" action="/listings">
-        <input name="title" placeholder="enter title" type="text">
+    <form method="post" action="/listings/<%=list._id%>"> 
+        <input name="listing[title]" placeholder="enter title" type="text">
         <br>
         <br>
         <textarea name="listing[description]" placeholder="enter description" type="text"></textarea>
