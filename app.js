@@ -76,6 +76,11 @@ app.get("/listings/:id/edit", async (req,res)=>{
     res.render("listings/edit.ejs", {list});
 })
 
+//returning to home page
+app.get("/listings" , (req, res)=> {
+    res.redirect("/listings");
+})
+
 //Update route
 app.put("/listings/:id" ,async (req, res)=> {
     const {id}= req.params;

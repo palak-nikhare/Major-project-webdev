@@ -17,8 +17,11 @@
 
     <a href="/listings/<%= Listing._id %>/edit">Edit the form</a>
     <br>
+    
+    <a href="/listings">Return to home page</a>
     <br>
-    <form method="post" action="/listings/<%=Listing._id%>?_method=DELETE">
+    <br>
+    <form method="post" action="/listings/<%=Listing._id%>?_method=DELETE" onsubmit="return confirm('Are you sure you want to delete this listing?')">
         <button>DELETE</button>
     </form>
 </body>
