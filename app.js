@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const listing = require("./models/listing.js")
 const path = require("path");
 const methodOverride = require("method-override");
+const ejsMate = require("ejs-mate");
 
 const mongo_url = "mongodb://127.0.0.1:27017/travelia";
 
@@ -11,6 +12,8 @@ app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 app.use(express.urlencoded({extended : true}));
 app.use(methodOverride("_method"));
+app.engine("ejs" , ejsMate);
+app.use(express.static(path.join(__dirname, "public")));
 
 main().then((res)=>{
     console.log("connected to db");
