@@ -4,11 +4,15 @@
     <div class="row">
         <div class="col-8 offset-2" >
     <h3>Create a new listing</h3>
-    <form method="post" action="/listings"> 
+    <form method="post" action="/listings" class="needs-validation" novalidate> 
 
         <div>
             <label for="title" class="form-label">Title</label>
-            <input name="listing[title]" placeholder="enter catchy title" type="text" class="form-control">
+            <input name="listing[title]" placeholder="enter catchy title" type="text" class="form-control" required>
+        
+            <div class="valid-feedback">
+                Title looks good
+            </div>
         </div>
         
         <br>
@@ -16,7 +20,11 @@
 
         <div>
             <label for="description" class="form-label">Description</label>
-            <textarea name="listing[description]" placeholder="enter description" type="text" class="form-control"></textarea>
+            <textarea name="listing[description]" placeholder="enter description" type="text" class="form-control" required></textarea>
+
+            <div class="invalid-feedback">
+                Enter a short description
+            </div>
         </div>
         
         <br>
@@ -29,10 +37,14 @@
         <br>
         <br>
 
+
+         <!-- type="number" -->
     <div class="row">
         <div class="mb-3 col-md-4">
             <label for="price" class="form-label">Price</label>
-            <input name="listing[price]" placeholder="1500" type="number" class="form-control">
+            <input name="listing[price]" placeholder="1500" class="form-control" required>
+
+            <div class="invalid-feedback">Please enter a valid price</div>
         </div>
         
         <br>
@@ -40,7 +52,9 @@
 
         <div class="mb-8 col-md-8">
             <label for="location" class="form-label">Location</label>
-            <input name="listing[location]" placeholder="enter location" type="text" class="form-control">
+            <input name="listing[location]" placeholder="enter location" type="text" class="form-control" required>
+
+            <div class="invalid-feedback">Location should be valid</div>
         </div>
     </div>
 
@@ -50,7 +64,9 @@
 
         <div>
             <label for="country" class="form-label">Country</label>
-            <input name="listing[country]" placeholder="India" type="text" class="form-control">
+            <input name="listing[country]" placeholder="India" type="text" class="form-control" required>
+
+            <div class="invalid-feedback">Country should be valid</div>
         </div>
         
         <br>
