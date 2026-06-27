@@ -7,7 +7,11 @@ const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
 const wrapAsync = require("./util/wrapasync.js");
 const expressError = require("./util/expressError.js");
-const {listingSchema} = require("./schema.js");
+const {listingSchema, reviewschema} = require("./schema.js");
+const Review = require("./models/review.js");
+const wrapasync = require("./util/wrapasync.js");
+const review = require("./models/review.js");
+
 
 const mongo_url = "mongodb://127.0.0.1:27017/travelia";
 
@@ -35,8 +39,19 @@ app.get("/", (req,res)=>{
 
 const validateListing = (req, res, next) =>{
     let {error} =listingSchema.validate(req.body);
-    let errmsg = error.details.map((el)=> el.message).join(",");
     if(error){
+            let errmsg = error.details.map((el)=> el.message).join(",");
+
+        throw new expressError(400, errmsg);
+    }
+    else next();
+}
+
+const validateReview = (req, res, next) =>{
+    let {error} = reviewschema.validate(req.body);
+    if(error){
+        let errmsg = error.details.map((el)=> el.message).join(",");
+
         throw new expressError(400, errmsg);
     }
     else next();
@@ -86,7 +101,7 @@ app.post("/listings" ,validateListing, wrapAsync(async(req ,res, next)=> {
 //show route
 app.get("/listings/:id" ,wrapAsync(async (req , res)=>{
     let {id} = req.params;
-    const Listing =await listing.findById(id);
+    const Listing =await listing.findById(id).populate("reviews");
     res.render("listings/show.ejs", {Listing})
 }))
 
@@ -119,6 +134,35 @@ app.delete("/listings/:id",wrapAsync(async (req,res)=> {
     console.log(dellist);
     res.redirect("/listings");
 }))
+
+
+//Reviews.    post route
+app.post("/listings/:id/reviews" ,validateReview, wrapAsync(async(req,res)=> {
+    const id = req.params.id;
+    let thslisting = await listing.findById(req.params.id);
+    let newreview = new Review (req.body.review);
+    
+    thslisting.reviews.push(newreview);
+    await newreview.save();
+    await thslisting.save();
+    console.log(req.body);
+    console.log(req.params);
+
+    console.log("New review saved")
+    res.redirect(`/listings/${id}`);
+}))
+
+
+//Delete review route
+app.delete("/listings/:id/reviews/:reviewId" , wrapasync(async (req, res, next) => {
+    let {id , reviewId} = req.params;
+    await Review.findByIdAndUpdate(id, {$pull: {reviews: reviewId}});
+    await Review.findByIdAndDelete(reviewId);
+
+    res.redirect(`/listings/${id}`)
+}))
+
+
 
 app.use((req,res,next) => {
     next(new expressError(404, "Page not found"));
