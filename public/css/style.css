@@ -57,6 +57,7 @@ body{
     flex-wrap: wrap;
     justify-content: center;
     align-items: space-evenly;
+    margin-top: auto ; 
 }
 
 
@@ -98,9 +99,7 @@ body{
     background-color: white;
 }
 
-.container{
-    flex: 1;
-}
+
 
 /* new page */
 .add-btn{
@@ -126,4 +125,8 @@ body{
 .show-card{
     padding-left: 0;
     padding-right: 0;
+}
+
+footer{
+    margin-top: auto !important;
 }
