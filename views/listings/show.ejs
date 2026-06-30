@@ -12,6 +12,8 @@
   <div class="card-body">
     <h5 class="card-title"> &#8377; <%=Listing.price.toLocaleString("en-IN")%> </h5>
     <b><br> </b>
+    <i>Owned by <%=Listing.owner.username%></i>
+    <br>
     <p class="card-text"><%=Listing.description%> <br>
         
         <%=Listing.location%> <br>
@@ -22,6 +24,7 @@
   </div>
 </div>
 
+<%if(currUser && currUser._id.equals(Listing.owner._id)) { %>
 
     <div class="btns mb-3">
         <a href="/listings/<%= Listing._id %>/edit" class="btn btn-dark col-1 offset-3 edit-btn">Edit</a>
@@ -31,13 +34,15 @@
         <button class="btn btn-dark offset-5">DELETE</button>
     </form>
     </div>
-
-
     <hr>
+<%}%>
+
+    
 
     <div class="col-8 offset-3">
+        
+    <% if(currUser) { %>
         <h3>Leave a review</h3>
-
         <form class="mb-3 mt-3 needs-validation" novalidate action="/listings/<%= Listing._id %>/reviews" method="post">
             <div class="mb-3 mt-3">
                 <label for="rating" class="form-label">Rating</label>
@@ -56,6 +61,8 @@
 
         </form>
 
+        <%}%>
+
         <hr>
         <p><b>All Reviews</b></p>
 
@@ -65,15 +72,17 @@
                 <div class="card col-5 ms-3 mb-3"> 
                     <div class="card-body">
                         <h5 class="card-title">
-                            Alfaba
+                            @<%=review.author.username%>
                         </h5>
                         <p class="card-text"><%=review.comment%></p>
                         <p class="card-text"><%=review.rating%> stars</p>
                     </div>
 
+                    <% if(currUser) { %>
                     <form class="mb-3" method="post" action="/listings/<%= Listing._id %>/reviews/<%=review._id%>?_method=delete">
                         <button class="btn btn-sm btn-dark ">Delete</button>
                     </form>
+                <%}%>
                 </div>
             <% } %>
 

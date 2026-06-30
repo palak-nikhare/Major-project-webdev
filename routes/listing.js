@@ -1,21 +1,12 @@
 const express = require("express");
 const router = express.Router();
 const wrapAsync = require("../util/wrapasync.js");
-const {listingSchema} = require("../schema.js");
-const expressError = require("../util/expressError.js");
+
 const listing = require("../models/listing.js")
-const {isloggedin} = require("../middleware.js")
+const {isloggedin, isowner, validateListing} = require("../middleware.js")
 
 
-const validateListing = (req, res, next) =>{
-    let {error} =listingSchema.validate(req.body);
-    if(error){
-            let errmsg = error.details.map((el)=> el.message).join(",");
 
-        throw new expressError(400, errmsg);
-    }
-    else next();
-}
 
 
 
@@ -41,6 +32,8 @@ router.post("/" ,validateListing, wrapAsync(async(req ,res, next)=> {
     
     const newlis = new listing(req.body.listing)
     //here listing is mongoose.model
+    console.log(req.user)
+    newlis.owner = req.user._id;
     await newlis.save();
     req.flash("success","New listing created");
     res.redirect("/listings");
@@ -49,7 +42,9 @@ router.post("/" ,validateListing, wrapAsync(async(req ,res, next)=> {
 //show route
 router.get("/:id" ,wrapAsync(async (req , res)=>{
     let {id} = req.params;
-    const Listing =await listing.findById(id).populate("reviews");
+    const Listing =await listing.findById(id).populate({path : "reviews", populate : {
+        path :"author", 
+    }}).populate("owner");
     if(!Listing) {
         req.flash("error","Listing does not exist");
         res.redirect("/listings")
@@ -58,7 +53,7 @@ router.get("/:id" ,wrapAsync(async (req , res)=>{
 }))
 
 //edit route
-router.get("/:id/edit",isloggedin, wrapAsync(async (req,res)=>{
+router.get("/:id/edit",isloggedin,isowner, wrapAsync(async (req,res)=>{
     const {id}= req.params;
     const list = await listing.findById(id);
     if(!list) {
@@ -74,19 +69,22 @@ router.get("/" , (req, res)=> {
 })
 
 //Update route
-router.put("/:id" ,validateListing ,isloggedin,wrapAsync(async (req, res)=> {
+router.put("/:id" ,validateListing ,isloggedin,isowner,wrapAsync(async (req, res)=> {
     if(!req.body || !req.body.listing){
         throw new expressError(400, "Send valid data for listing");
     }
     const {id}= req.params;
+
+    
+    
     await listing.findByIdAndUpdate(id, {...req.body.listing});
     req.flash("success","Listing updated");
 
-    res.redirect(`/listings/${id}`);
-}) )
+    res.redirect(`/listings/${id}`);}
+) )
 
 //delete route
-router.delete("/:id",isloggedin,wrapAsync(async (req,res)=> {
+router.delete("/:id",isloggedin,isowner,wrapAsync(async (req,res)=> {
     const {id}= req.params;
     let dellist= await listing.findByIdAndDelete(id);
     console.log(dellist);
